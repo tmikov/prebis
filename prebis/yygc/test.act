@@ -1,0 +1,169 @@
+
+case 1:
+#line 77 "test.y"
+{;
+    break;}
+case 2:
+#line 81 "test.y"
+{;
+    break;}
+case 3:
+#line 82 "test.y"
+{;
+    break;}
+case 4:
+#line 87 "test.y"
+{;
+    break;}
+case 5:
+#line 88 "test.y"
+{;
+    break;}
+case 6:
+#line 89 "test.y"
+{;
+    break;}
+case 7:
+#line 93 "test.y"
+{;
+    break;}
+case 14:
+#line 100 "test.y"
+{ return "YYST_TOK"; ;
+    break;}
+case 15:
+#line 101 "test.y"
+{;
+    break;}
+case 16:
+#line 106 "test.y"
+{;
+    break;}
+case 17:
+#line 111 "test.y"
+{;
+    break;}
+case 18:
+#line 115 "test.y"
+{;
+    break;}
+case 19:
+#line 116 "test.y"
+{;
+    break;}
+case 20:
+#line 120 "test.y"
+{;
+    break;}
+case 22:
+#line 125 "test.y"
+{;
+    break;}
+case 23:
+#line 126 "test.y"
+{;
+    break;}
+case 24:
+#line 131 "test.y"
+{;
+    break;}
+case 25:
+#line 135 "test.y"
+{ return "YYST_TOK"; ;
+    break;}
+case 26:
+#line 136 "test.y"
+{;
+    break;}
+case 27:
+#line 137 "test.y"
+{ return "YYST_TOK"; ;
+    break;}
+case 30:
+#line 143 "test.y"
+{;
+    break;}
+case 31:
+#line 148 "test.y"
+{;
+    break;}
+case 33:
+#line 154 "test.y"
+{ return "YYST_TOK"; ;
+    break;}
+case 35:
+#line 155 "test.y"
+{;
+    break;}
+case 37:
+#line 160 "test.y"
+{ return "YYST_TOK"; ;
+    break;}
+case 39:
+#line 165 "test.y"
+{;
+    break;}
+case 41:
+#line 172 "test.y"
+{;
+    break;}
+case 42:
+#line 176 "test.y"
+{;
+    break;}
+case 43:
+#line 177 "test.y"
+{;
+    break;}
+case 46:
+#line 186 "test.y"
+{;
+    break;}
+case 47:
+#line 187 "test.y"
+{;
+    break;}
+case 49:
+#line 193 "test.y"
+{;
+    break;}
+case 50:
+#line 203 "test.y"
+{;
+    break;}
+case 52:
+#line 206 "test.y"
+{;
+    break;}
+case 53:
+#line 211 "test.y"
+{;
+    break;}
+case 54:
+#line 217 "test.y"
+{;
+    break;}
+case 56:
+#line 222 "test.y"
+{;
+    break;}
+case 57:
+#line 227 "test.y"
+{;
+    break;}
+case 58:
+#line 230 "test.y"
+{;
+    break;}
+case 59:
+#line 231 "test.y"
+{;
+    break;}
+case 60:
+#line 235 "test.y"
+{;
+    break;}
+case 62:
+#line 241 "test.y"
+{;
+    break;}

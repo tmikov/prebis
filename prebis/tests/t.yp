@@ -1,0 +1,8 @@
+%token TOK1 / 76
+
+%%
+
+prog : TOK;
+
+
+%%

@@ -1,0 +1,254 @@
+8-18-2002
+There are three ways to mark the parser semantic value stack (oredered 
+by increasing complexity):
+a) Keep a type tag in each value
+b) Modify BISON.SIMPLE to maintain yet another stack holding the index of the 
+   token or rule associated with the value. Since each token and rule has associated type,
+   we know the type of the value.
+c) Similar to b), but instead of using another stack, infer the toke/rule number 
+   from the state number. Use that in a state is always entered by shifting the
+   same rule/token. See for example a small excerpt from c.output:
+state 24
+        ENUM .
+        ENUM .
+        ENUM .
+state 129
+        GenType_specifier_qualifier_list .
+        GenType_specifier_qualifier_list .
+etc... etc...
+
+Lets look at the alternatives separately.
+
+a) This is definitely the most straight forward, but it has a few disadvantafes.
+-It requires modifications to the declaration of YYSTYPE. That leads to modifications
+in the lexer (it has to assign a type tag to every token) and to the semantic
+actions (since the values have to be structures instead of pointers). 
+-Doubles the required memory.
+-Slows down the parser. Manipulating a structure is slower than a simple
+value. The memory cache is also polluted with type tags.
+
+The problem is that all these changes and slowdowns are only to be used for
+GC. They affect negatively everything else.
+
+Solution b) avoids most of the problems of a) (except doubling the required 
+memory, of course): It doesn't require modifications to the lexer and semantic 
+actions. It doesn't pollute the cache as much since the tags and
+the values are kept in separate arrays/stacks. Also the semantic actions access
+and modify yyval which is just a pointer (usually).
+
+Solution c) is better yet because it doesn't even use more memory. The 
+problem with it is that I am not a 100% sure that the invariant it relies
+on is always kept (but this can be verified) and that probably it will be 
+slightly harder to port to other parser generatoes (which I don't really
+want to do!). Also, it probably requires a tool to extract the token indeces
+from the state numbers.
+
+Let's concentrate on b) and c) since they require some creativity and don't 
+impose changes on existing grammars and lexers. The discussion is only
+in the context of BISON (although other yacc-derivative generators are 
+probably very similar).
+
+
+   Type information from token/non-terminal number 
+
+As we know the lexer returns terminals as integer numbers. There are several
+kinds of terminals a lexer can return, using a different ineteger range:
+(..0]    : End of input
+[1..255] : a single ASCII character, e.g. '(' or ';'
+[256..)  : a terminal symbol (define by the parser in xxx.tab.h)
+
+Bison doesn't internally distinguish terminals and single characters  - the 
+separate ranges are used only for convenience of the programmer - to avoid 
+conflicts between simple characters and terminals and to allow using the 
+default rule ".   return *yytext;" in F?LEX.
+
+BISON reads each token by calling yylex() and assigns the result
+to "int yychar". yychar is the "look-ahead token". It contains either the
+current look-ahead token returned by yylex(), EOF (0) or YYEMPTY (-2). 
+YYEMPTY means that the last look-ahead token has been consumed and a new
+one must be read.
+
+BISON uses consequtive integers to identify tokens and non-terminals. 
+0 = EOF
+1 = error
+2 = $undefined
+[3..YYNTBASE) = tokens
+[YYNTBASE..)  = non-terminals
+
+BISON translates tokens numbers returned by LEX [1..>255), into 
+"translated tokens" which are in the range [3..YYNTBASE). YYNTBASE is usually
+smaller than 255 (it is, say, about 90) because there are not that many terminas
+that are used in a grammar. This is a form of table compression. BISON 
+uses the yytranslate[YYMAXUTOK+1] table and the macro YYTRANSLATE() to
+translate form "input" tokens in yychar to "translated" tokens in "int yychar1".
+
+
+BISON can be instructed to generate more information by using the 
+'--token-table/-k' option. These additional symbols are defined (among others):
+
+YYNTOKENS - number of terminal symbols/tokens
+YYNNTS    - number of non-terminal symbols
+YYNRULES  - number of rules
+YYNSTATES - number of states
+YYMAXUTOK - the largest token that can be returned by yylex()
+
+The names of terminals and non-terminals are generated in the table
+  const char *const yytname[YYNTOKENS+YYNNTS+1]; 
+(yytname[] is terminated with a NULL - that's where the +1 comes from).
+
+Obviously the index in yytname[] is the "translated" token number. 
+
+The table
+  const short yytoknum[YYNTOKENS+1]; /* terminated with -1 */
+contains the input token numbers of translated tokens.
+
+(yytname[] and yytoknum[] are actually generated so they can be used to 
+resolve terminals encoded as strings by looking the string up in yytname[]
+annd obtaining its input token number from yytoknum[]. We are going to
+uses those tables for a different purpose, however).
+
+So, in the end we have a number in the range [3..YYNTOKENS+YYNTS], which 
+identifies a token or a rule. If the number is < YYNTOKENS, the
+input token number is yytoknum[number]. Otherwise the terminal number
+is (number-YYNTBASE).
+
+Eventually, we want to be able to write a function which acts on a value
+depending on the token or the non-terminal that generated it. It is most
+natural to use translated tokens to identify tokens/non-terminals. We could 
+write a function like this:
+
+  static void PrintToken ( const YYSTYPE * val, int symbol )
+  {
+    switch (symbol)
+    {
+    case 1: case 2: case 10: 
+      printf( "%s", val->str );
+      break;
+    case 3: case 4: case 20: case 30:
+      printf( "%d", val->num );
+      break;
+    }
+  };
+
+(In the above example 1, 2, 3, 4, 10, 20, 30 are the translated numbers of
+tokens and/or non-terminals.)
+
+Of course writing such a function manually is extremely error-prone. Token 
+and non-terminal numbers could change probably even with different versions 
+of BISON (let alone when modifying the grammar). Ideally it should be generated 
+automatically. This is, of course, possible, but it requires a fairly complicated
+tool - the problem is that custom user actions must be inserted after each
+case statement. I imagine the input to the tool could look like:
+
+  %{
+    static void PrintToken ( const YYSTYPE * val, int symbol )
+    {
+      switch (symbol)
+      {
+  %}
+  %type_action<str> printf( "%s", val->str )
+  %type_action<num> printf( "%d", val->num )
+  %{
+      }
+    }
+  %}
+
+Fortunately, there is an easier approach. It is sufficient to have a table
+which maps from a translated symbol number to a type. This table also must
+be generated by a tool, but it is a much simpler task because it doesn't require
+parsing and inserting of custom actions. The table should look like:
+
+  const unsigned char yytoktype[YYNTOKENS+YYNTS] = 
+  {
+    YYST_STR, YYST_STR, YYST_NUM, YYST_STR,
+    ....
+  };
+
+
+Then we write PrintToken (and others like it) entirely in custom code:
+  static void PrintToken ( const YYSTYPE * val, int symbol )
+  {
+    switch (yytoktype[symbol])
+    {
+    case YYST_STR: 
+      printf( "%s", val->str );
+      break;
+    case YYST_NUM:
+      printf( "%d", val->num );
+      break;
+    }
+  };
+This will actually be more efficient than the first approach.
+
+
+Now we come to the real problem. How to generate the yytoktype[] table?
+
+The only solution is to use a two pass process. In the first pass we remove 
+all user C code from the grammar and insert our special C code which uses 
+yytname[] and *outputs* the contents of the yytoktype[] table. In order to do
+this safely we must also replace the %union definition with a dummy %union,
+which defines all smenatic types as int (the actual %union is probably
+referecning definitions from the user C code which we removed).
+
+We run this "special" grammar through BISON with parameters 
+"--token-table --no-parser", compile it and run it, redirecting its output to 
+a file.
+
+In the second pass we simply include in the grammar the file generated by the 
+first pass.
+
+
+  Symbol number from state number
+
+The state number encodes the contents of the parse stack, so the state number
+uniquely identifies the symbol (terminal or non-terminal) on the top of the 
+stack. So, we can deduce the symbol that generated any value on the semantic 
+value stack and using the technique described in the previous section we
+can determine the type of the semantic value.
+
+The general form of a LR parse table is like this:
+
+  symbol   T1  T2  T3  T4   NT1 NT2 NT3
+  state +-----------------+-------------
+        |                 |
+   S1   |  a   a   a   a  |  g   g   g
+        |                 |
+   S2   |  a   a   a   a  |  g   g   g
+        |                 |
+   S3   |  a   a   a   a  |  g   g   g
+        |                 |
+   S4   |  a   a   a   a  |  g   g   g
+
+
+The right-hand part of the table is called the "goto" table. It will be explained
+shortly.
+
+In the left part of the table we have actions to be executed depending on
+the current look-ahead terminal and the current state. The action (a) can 
+be one of these:
+  
+  Sx - Shift the current symbol and goto state x.
+  Rx - Reduce using rule x
+  E  - Error
+  A  - Accept - the grammar has been parsed successfully.
+
+We need to define precisely what "Shift" and "Reduce" mean:
+  - "Shift" pushes the current state number and the semantic value of the current look-ahead 
+token on the parser stack.
+
+  - "Reduce N" executes the semantic action associated with rule N, 
+pops a number of entries coresponding to the number of symbols
+on the right of rule N from the parser stack, and pushes the value generated by
+the semantic action and the non-terminal symbol derived by rule N on the parser 
+stack.
+
+Once a "Reduce" action has been executed, the parser refers to the "goto" table.
+It looks up the entry corresponding to the state on the top of the stack and 
+the symbol that has just been reduced. The entry contains the new state number.
+
+
+
+
+
+
+                            

@@ -1,0 +1,1111 @@
+state 0
+state 1
+        C_VOID .
+state 2
+        C_CHAR .
+state 3
+        C_SHORT .
+state 4
+        C_INT .
+state 5
+        C_LONG .
+state 6
+        C_SIGNED .
+state 7
+        C_UNSIGNED .
+state 8
+        C_FLOAT .
+state 9
+        C_DOUBLE .
+state 10
+        C__BOOL .
+state 11
+        C__COMPLEX .
+state 12
+        C__IMAGINARY .
+state 13
+        C_EXT_INT .
+state 14
+        C_CONST .
+state 15
+        C_VOLATILE .
+state 16
+        C_RESTRICT .
+state 17
+        C_EXTERN .
+state 18
+        C_AUTO .
+state 19
+        C_STATIC .
+state 20
+        C_REGISTER .
+state 21
+        C_TYPEDEF .
+state 22
+        C_INLINE .
+state 23
+        STRUCT .
+state 24
+        ENUM .
+        ENUM .
+        ENUM .
+state 25
+        UNION .
+state 26
+        TYPENAME .
+state 27
+        DECLSPEC .
+state 28
+        ATTR .
+state 29
+        TYPEOF .
+        TYPEOF .
+state 30
+        ';' .
+state 31
+        declaration .
+state 32
+        GenType_declaration_specifiers .
+        GenType_declaration_specifiers .
+state 33
+        declaration_specifiers .
+state 34
+        storage_class_specifier .
+state 35
+        sclass .
+state 36
+        declspec .
+state 37
+        type_specifier .
+state 38
+        typespec .
+state 39
+        extended_int_specifier .
+state 40
+        struct_or_union_specifier .
+state 41
+        struct_or_union .
+        struct_or_union .
+        struct_or_union .
+state 42
+        enum_specifier .
+state 43
+        type_qualifier .
+state 44
+        qual .
+state 45
+        function_specifier .
+state 46
+        typedef_name .
+state 47
+        translation_unit .
+        translation_unit .
+state 48
+        external_declaration .
+state 49
+        function_definition .
+state 50
+        '(' .
+state 51
+        IDENT .
+state 52
+        TYPENAME .
+state 53
+        '{' .
+state 54
+        any_identifier .
+        any_identifier .
+state 55
+        '(' .
+state 56
+        '(' .
+state 57
+        '(' .
+        '(' .
+state 58
+        '*' .
+state 59
+        init_declarator_list .
+        init_declarator_list .
+state 60
+        init_declarator_list_opt .
+state 61
+        init_declarator .
+state 62
+        declarator .
+        declarator .
+        declarator .
+state 63
+        qual_pointer .
+state 64
+        pointer .
+        pointer .
+state 65
+        pointer_opt .
+state 66
+        declaration_specifiers .
+state 67
+        declaration_specifiers_opt .
+state 68
+        declaration_specifiers1 .
+state 69
+        storage_class_specifier .
+state 70
+        type_specifier .
+state 71
+        type_qualifier .
+state 72
+        function_specifier .
+state 73
+        declspec_list_opt .
+        declspec_list_opt .
+        declspec_list_opt .
+        declspec_list_opt .
+state 74
+        declaration_specifiers_opt .
+state 75
+        declaration_specifiers_opt .
+state 76
+        declaration_specifiers2 .
+state 77
+        storage_class_specifier .
+state 78
+        type_qualifier .
+state 79
+        function_specifier .
+state 80
+        external_declaration .
+state 81
+        NUMBER .
+state 82
+        any_identifier .
+state 83
+        enumerator_list .
+        enumerator_list .
+state 84
+        enumerator .
+state 85
+        enumeration_constant .
+        enumeration_constant .
+state 86
+        '{' .
+state 87
+        any_identifier .
+state 88
+        any_identifier .
+state 89
+        SIZEOF .
+        SIZEOF .
+state 90
+        IDENT .
+state 91
+        NUMBER .
+state 92
+        F_NUMBER .
+state 93
+        STRING_CONST .
+state 94
+        LSTRING_CONST .
+state 95
+        LOG_AND .
+state 96
+        INC .
+state 97
+        DEC .
+state 98
+        ALIGNOF .
+        ALIGNOF .
+state 99
+        '(' .
+        '(' .
+        '(' .
+        '(' .
+state 100
+        '&' .
+state 101
+        '*' .
+state 102
+        '+' .
+state 103
+        '-' .
+state 104
+        '~' .
+state 105
+        '!' .
+state 106
+        constant .
+state 107
+        string_literal .
+        string_literal .
+        string_literal .
+state 108
+        identifier .
+state 109
+        primary_expression .
+state 110
+        postfix_expression .
+        postfix_expression .
+        postfix_expression .
+        postfix_expression .
+        postfix_expression .
+        postfix_expression .
+        postfix_expression .
+state 111
+        unary_expression .
+        unary_expression .
+state 112
+        unary_operator .
+state 113
+        cast_expression .
+state 114
+        multiplicative_expression .
+        multiplicative_expression .
+        multiplicative_expression .
+        multiplicative_expression .
+state 115
+        additive_expression .
+        additive_expression .
+        additive_expression .
+state 116
+        shift_expression .
+        shift_expression .
+state 117
+        relational_expression .
+        relational_expression .
+state 118
+        equality_expression .
+        equality_expression .
+state 119
+        and_expression .
+        and_expression .
+state 120
+        exclusive_or_expression .
+        exclusive_or_expression .
+state 121
+        inclusive_or_expression .
+        inclusive_or_expression .
+state 122
+        logical_and_expression .
+        logical_and_expression .
+state 123
+        logical_or_expression .
+        logical_or_expression .
+        logical_or_expression .
+state 124
+        conditional_expression .
+state 125
+        assignment_expression .
+state 126
+        expression1 .
+        expression1 .
+state 127
+        expression .
+state 128
+        type_specifier .
+state 129
+        GenType_specifier_qualifier_list .
+        GenType_specifier_qualifier_list .
+state 130
+        specifier_qualifier_list .
+state 131
+        type_qualifier .
+        type_qualifier .
+state 132
+        type_name .
+state 133
+        typedef_name .
+state 134
+        type_qualifier .
+state 135
+        type_qualifier_list .
+        type_qualifier_list .
+state 136
+        type_qualifier_list_opt .
+state 137
+        ',' .
+state 138
+        ';' .
+state 139
+        '=' .
+state 140
+        declaration .
+state 141
+        GenType_declaration_specifiers .
+state 142
+        declaration_list .
+        declaration_list .
+state 143
+        declaration_list_opt .
+state 144
+        qual_pointer .
+state 145
+        '(' .
+state 146
+        any_identifier .
+state 147
+        left_bra_CopyType .
+state 148
+        direct_declarator .
+        direct_declarator .
+state 149
+        declaration_specifiers1 .
+state 150
+        declaration_specifiers1 .
+state 151
+        declaration_specifiers1 .
+state 152
+        declaration_specifiers1 .
+state 153
+        '{' .
+state 154
+        any_identifier .
+        any_identifier .
+state 155
+        declspec .
+state 156
+        declaration_specifiers2 .
+state 157
+        declaration_specifiers2 .
+state 158
+        declaration_specifiers2 .
+state 159
+        ')' .
+state 160
+        ',' .
+        ',' .
+state 161
+        comma_opt .
+state 162
+        '=' .
+state 163
+        enumerator_list .
+        enumerator_list .
+state 164
+        ')' .
+state 165
+        ')' .
+state 166
+        '(' .
+        '(' .
+        '(' .
+        '(' .
+state 167
+        unary_expression .
+state 168
+        any_identifier .
+state 169
+        '(' .
+        '(' .
+        '(' .
+state 170
+        unary_expression .
+state 171
+        unary_expression .
+state 172
+        '(' .
+        '(' .
+        '(' .
+        '(' .
+state 173
+        unary_expression .
+state 174
+        '{' .
+state 175
+        expression .
+state 176
+        type_name .
+        type_name .
+state 177
+        compound_statement .
+state 178
+        STRING_CONST .
+state 179
+        LSTRING_CONST .
+state 180
+        INC .
+state 181
+        DEC .
+state 182
+        PTR .
+state 183
+        '(' .
+state 184
+        '[' .
+state 185
+        '.' .
+state 186
+        ASSIGN .
+state 187
+        '=' .
+state 188
+        assignment_operator .
+state 189
+        unary_expression .
+state 190
+        cast_expression .
+state 191
+        '*' .
+state 192
+        '/' .
+state 193
+        '%' .
+state 194
+        '+' .
+state 195
+        '-' .
+state 196
+        SHIFT .
+state 197
+        ARITHCOMPARE .
+state 198
+        EQCOMPARE .
+state 199
+        '&' .
+state 200
+        '^' .
+state 201
+        '|' .
+state 202
+        LOG_AND .
+state 203
+        LOG_OR .
+state 204
+        '?' .
+state 205
+        ',' .
+state 206
+        ')' .
+state 207
+        type_specifier .
+state 208
+        specifier_qualifier_list1 .
+state 209
+        type_qualifier .
+state 210
+        pointer .
+        pointer .
+        pointer .
+state 211
+        pointer_opt .
+state 212
+        abstract_declarator .
+state 213
+        specifier_qualifier_list .
+state 214
+        ')' .
+state 215
+        specifier_qualifier_list2 .
+state 216
+        type_qualifier .
+state 217
+        type_qualifier .
+state 218
+        @1 .
+state 219
+        '{' .
+state 220
+        assignment_expression .
+state 221
+        initializer .
+state 222
+        declarator .
+        declarator .
+state 223
+        declaration .
+state 224
+        compound_statement .
+state 225
+        declarator .
+state 226
+        '(' .
+        '(' .
+state 227
+        '[' .
+        '[' .
+        '[' .
+        '[' .
+state 228
+        direct_declarator_tail .
+state 229
+        struct_declaration_list .
+        struct_declaration_list .
+state 230
+        struct_declaration .
+state 231
+        GenType_specifier_qualifier_list .
+state 232
+        '{' .
+state 233
+        enumerator .
+state 234
+        '}' .
+state 235
+        conditional_expression .
+state 236
+        constant_expression1 .
+state 237
+        constant_expression .
+state 238
+        comma_opt .
+state 239
+        type_name .
+        type_name .
+state 240
+        type_name .
+state 241
+        type_name .
+        type_name .
+state 242
+        LABEL .
+state 243
+        declare_labels_list .
+        declare_labels_list .
+state 244
+        declare_labels_list_opt .
+state 245
+        declare_labels .
+        declare_labels .
+state 246
+        ')' .
+state 247
+        ')' .
+        ')' .
+state 248
+        ')' .
+state 249
+        any_identifier .
+state 250
+        argument_expression_list .
+        argument_expression_list .
+state 251
+        argument_expression_list_opt .
+state 252
+        assignment_expression .
+state 253
+        expression .
+state 254
+        any_identifier .
+state 255
+        assignment_expression .
+state 256
+        cast_expression .
+state 257
+        cast_expression .
+state 258
+        cast_expression .
+state 259
+        multiplicative_expression .
+        multiplicative_expression .
+        multiplicative_expression .
+        multiplicative_expression .
+state 260
+        multiplicative_expression .
+        multiplicative_expression .
+        multiplicative_expression .
+        multiplicative_expression .
+state 261
+        additive_expression .
+        additive_expression .
+        additive_expression .
+state 262
+        shift_expression .
+        shift_expression .
+state 263
+        relational_expression .
+        relational_expression .
+state 264
+        equality_expression .
+        equality_expression .
+state 265
+        and_expression .
+        and_expression .
+state 266
+        exclusive_or_expression .
+        exclusive_or_expression .
+state 267
+        inclusive_or_expression .
+        inclusive_or_expression .
+state 268
+        logical_and_expression .
+        logical_and_expression .
+state 269
+        expression .
+state 270
+        expression_opt .
+state 271
+        assignment_expression .
+state 272
+        specifier_qualifier_list1 .
+state 273
+        specifier_qualifier_list1 .
+state 274
+        '(' .
+        '(' .
+state 275
+        '[' .
+        '[' .
+state 276
+        left_bra_CopyType .
+state 277
+        direct_abstract_declarator .
+        direct_abstract_declarator .
+        direct_abstract_declarator .
+        direct_abstract_declarator .
+state 278
+        specifier_qualifier_list2 .
+state 279
+        init_declarator .
+state 280
+        '[' .
+        '[' .
+state 281
+        '.' .
+state 282
+        initializer_list .
+        initializer_list .
+state 283
+        designation .
+state 284
+        designation_opt .
+state 285
+        designator_list .
+        designator_list .
+state 286
+        designator .
+state 287
+        ')' .
+state 288
+        identifier .
+state 289
+        forward_parameter_decl .
+        forward_parameter_decl .
+state 290
+        parameter_type_list .
+state 291
+        identifier_list .
+        identifier_list .
+state 292
+        identifier_list_opt .
+state 293
+        C_STATIC .
+state 294
+        type_qualifier_list .
+        type_qualifier_list .
+        type_qualifier_list .
+state 295
+        type_qualifier_list_opt .
+        type_qualifier_list_opt .
+state 296
+        '}' .
+state 297
+        struct_declaration .
+state 298
+        ':' .
+state 299
+        struct_declarator_list .
+        struct_declarator_list .
+state 300
+        struct_declarator .
+state 301
+        declarator .
+        declarator .
+state 302
+        struct_declaration_list .
+        struct_declaration_list .
+state 303
+        '}' .
+state 304
+        ')' .
+        ')' .
+state 305
+        ')' .
+state 306
+        ')' .
+        ')' .
+state 307
+        any_identifier .
+state 308
+        declare_labels .
+        declare_labels .
+state 309
+        SWITCH .
+state 310
+        CONTINUE .
+state 311
+        CASE .
+        CASE .
+state 312
+        DEFAULT .
+state 313
+        WHILE .
+state 314
+        DO .
+state 315
+        GOTO .
+        GOTO .
+state 316
+        BREAK .
+state 317
+        IF .
+        IF .
+state 318
+        FOR .
+        FOR .
+state 319
+        RETURN .
+state 320
+        IDENT .
+        IDENT .
+state 321
+        TYPENAME .
+        TYPENAME .
+state 322
+        any_identifier .
+state 323
+        expression_opt .
+state 324
+        declaration .
+state 325
+        statement .
+state 326
+        labeled_statement .
+state 327
+        compound_statement .
+state 328
+        block_item_list .
+        block_item_list .
+state 329
+        block_item_list_opt .
+state 330
+        block_item .
+state 331
+        expression_statement .
+state 332
+        selection_statement .
+state 333
+        iteration_statement .
+state 334
+        jump_statement .
+state 335
+        ',' .
+state 336
+        ';' .
+state 337
+        '{' .
+state 338
+        cast_expression .
+state 339
+        ',' .
+state 340
+        ')' .
+state 341
+        ']' .
+state 342
+        ':' .
+state 343
+        parameter_type_list .
+state 344
+        parameter_type_list_opt .
+state 345
+        '*' .
+        '*' .
+state 346
+        assignment_expression .
+state 347
+        assignment_expression_opt .
+state 348
+        abstract_declarator .
+state 349
+        '(' .
+state 350
+        '[' .
+        '[' .
+state 351
+        constant_expression .
+        constant_expression .
+state 352
+        any_identifier .
+state 353
+        ',' .
+        ',' .
+state 354
+        comma_opt .
+state 355
+        initializer .
+state 356
+        '=' .
+state 357
+        designator .
+state 358
+        GenType_declaration_specifiers .
+        GenType_declaration_specifiers .
+        GenType_declaration_specifiers .
+state 359
+        parameter_list .
+        parameter_list .
+        parameter_list .
+state 360
+        parameter_declaration .
+state 361
+        ')' .
+state 362
+        ',' .
+state 363
+        ')' .
+state 364
+        type_qualifier_list_opt .
+state 365
+        C_STATIC .
+state 366
+        '*' .
+        '*' .
+state 367
+        assignment_expression_opt .
+state 368
+        constant_expression .
+state 369
+        ',' .
+state 370
+        ';' .
+state 371
+        ':' .
+state 372
+        '}' .
+state 373
+        ';' .
+state 374
+        '(' .
+state 375
+        ';' .
+state 376
+        constant_expression .
+        constant_expression .
+state 377
+        ':' .
+state 378
+        '(' .
+state 379
+        statement .
+state 380
+        '*' .
+state 381
+        any_identifier .
+state 382
+        ';' .
+state 383
+        '(' .
+        '(' .
+state 384
+        '(' .
+        '(' .
+state 385
+        expression_opt .
+state 386
+        ':' .
+state 387
+        ';' .
+state 388
+        block_item .
+state 389
+        '}' .
+state 390
+        any_identifier .
+state 391
+        initializer_list .
+        initializer_list .
+state 392
+        assignment_expression .
+state 393
+        conditional_expression .
+state 394
+        ')' .
+state 395
+        ']' .
+state 396
+        ']' .
+state 397
+        ')' .
+state 398
+        parameter_type_list_opt .
+state 399
+        '*' .
+        '*' .
+state 400
+        assignment_expression_opt .
+state 401
+        ELLIPSIS .
+state 402
+        ']' .
+state 403
+        designation_opt .
+state 404
+        '}' .
+state 405
+        declarator1 .
+state 406
+        pointer_opt .
+        pointer_opt .
+state 407
+        abstract_declarator .
+state 408
+        ',' .
+        ',' .
+state 409
+        any_identifier .
+state 410
+        assignment_expression .
+state 411
+        assignment_expression .
+state 412
+        ']' .
+state 413
+        ']' .
+state 414
+        @2 .
+state 415
+        constant_expression .
+state 416
+        expression .
+state 417
+        ELLIPSIS .
+state 418
+        ':' .
+state 419
+        statement .
+state 420
+        expression .
+state 421
+        WHILE .
+state 422
+        cast_expression .
+state 423
+        ';' .
+state 424
+        expression .
+        expression .
+state 425
+        expression_opt .
+state 426
+        declaration .
+state 427
+        ';' .
+state 428
+        statement .
+state 429
+        comma_opt .
+state 430
+        ')' .
+state 431
+        ']' .
+state 432
+        ']' .
+state 433
+        constant_expression .
+state 434
+        initializer .
+state 435
+        any_identifier .
+state 436
+        left_bra_CopyType .
+        left_bra_CopyType .
+state 437
+        direct_declarator1 .
+        direct_declarator1 .
+state 438
+        ELLIPSIS .
+state 439
+        parameter_declaration .
+state 440
+        ']' .
+state 441
+        ']' .
+state 442
+        struct_declarator .
+state 443
+        ')' .
+state 444
+        constant_expression .
+state 445
+        statement .
+state 446
+        ')' .
+state 447
+        '(' .
+state 448
+        ';' .
+state 449
+        ')' .
+        ')' .
+state 450
+        ';' .
+state 451
+        expression_opt .
+state 452
+        '}' .
+state 453
+        ']' .
+state 454
+        declarator2 .
+state 455
+        pointer_opt .
+        pointer_opt .
+state 456
+        direct_declarator_tail .
+state 457
+        statement .
+state 458
+        ':' .
+state 459
+        statement .
+state 460
+        expression .
+state 461
+        statement .
+        statement .
+state 462
+        expression_opt .
+state 463
+        ';' .
+state 464
+        ')' .
+state 465
+        identifier .
+state 466
+        left_bra_CopyType .
+        left_bra_CopyType .
+state 467
+        direct_declarator2 .
+        direct_declarator2 .
+state 468
+        statement .
+state 469
+        ')' .
+state 470
+        ELSE .
+state 471
+        ';' .
+state 472
+        expression_opt .
+state 473
+        declarator2 .
+state 474
+        direct_declarator_tail .
+state 475
+        ';' .
+state 476
+        statement .
+state 477
+        expression_opt .
+state 478
+        ')' .
+state 479
+        ')' .
+state 480
+        ')' .
+state 481
+        statement .
+state 482
+        statement .
+state 483
+state 484
+state 485

@@ -1,0 +1,5 @@
+
+case 1:
+#line 9 "t.y"
+{ yyval.val = 0 ;
+    break;}

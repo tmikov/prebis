@@ -1,0 +1,355 @@
+
+case 1:
+#line 77 "pre1.y"
+{
+      yyval.tok = Chain( yyvsp[-4].tok, Chain( yyvsp[-3].tok, Chain( yyvsp[-2].tok, Chain( yyvsp[-1].tok, yyvsp[0].tok ) ) ) );
+
+      TRACE1( "Strings_count = %u\n", Strings_Count );
+      Strings_Unpin();
+      GcCollectStart();
+        GC_MARK( yyval.tok );
+        Prebis_MarkRoots();
+      GcCollectEnd();
+
+      Gen( yyval.tok );
+      printf( "\n" );
+    ;
+    break;}
+case 2:
+#line 93 "pre1.y"
+{ yyval.tok = NULL ;
+    break;}
+case 3:
+#line 94 "pre1.y"
+{ yyval.tok = Chain( yyvsp[-1].tok, yyvsp[0].tok ) ;
+    break;}
+case 4:
+#line 99 "pre1.y"
+{
+        TToken * tok;
+
+        // Declare terminals
+        //
+        for ( tok = yyvsp[0].tok; tok != NULL; tok = tok->pNext )
+        {
+          TSymbol * sym = tok->sym;
+
+          // if it is not declared with "%type", it is a terminal symbol
+          if (sym->sc == 0 && yyvsp[-2].tok->code != TYPE)
+            sym->sc = SC_TERM;
+        }
+
+        yyval.tok = Chain( yyvsp[-2].tok, Chain( yyvsp[-1].tok, yyvsp[0].tok ) );
+      ;
+    break;}
+case 5:
+#line 115 "pre1.y"
+{ yyval.tok = Chain( yyvsp[-1].tok, yyvsp[0].tok ) ;
+    break;}
+case 6:
+#line 116 "pre1.y"
+{ yyval.tok = Chain( yyvsp[-1].tok, yyvsp[0].tok ) ;
+    break;}
+case 7:
+#line 120 "pre1.y"
+{ yyval.tok = yyvsp[0].tok ;
+    break;}
+case 14:
+#line 127 "pre1.y"
+{yyval.tok=yyvsp[-1].tok;
+    break;}
+case 15:
+#line 128 "pre1.y"
+{ yyval.tok = Chain( yyvsp[-2].tok, yyvsp[0].tok ) ;
+    break;}
+case 16:
+#line 133 "pre1.y"
+{
+      TSymbol * sym = yyvsp[-1].tok->sym;
+
+      // Set the type
+      if (yyvsp[-2].tok != NULL)
+      {
+        if (sym->type != NULL)
+        {
+          if (sym->type != yyvsp[-2].tok->str)
+          {
+            Error( "Redefining the type of terminal '%s' from %s to %s", 
+                    C_STR(sym->name), C_STR(sym->type), C_STR(yyvsp[-2].tok->str) );
+          }
+        }
+        sym->type = yyvsp[-2].tok->str;
+      }
+      
+      RET1;
+    ;
+    break;}
+case 17:
+#line 156 "pre1.y"
+{
+      // Add the symbol to the symbol list
+      //
+      if (yyvsp[0].tok->sym->link.Flink == NULL)
+        INSERT_TAIL_LIST( &Symbols, &yyvsp[0].tok->sym->link );
+      RET1;
+    ;
+    break;}
+case 18:
+#line 166 "pre1.y"
+{ yyvsp[0].tok->sym = GetSymbol( yyvsp[0].tok->str ); RET1 ;
+    break;}
+case 19:
+#line 167 "pre1.y"
+{ 
+                  yyvsp[0].tok->sym = GetSymbol( yyvsp[0].tok->str ); 
+                  if (yyvsp[0].tok->sym->sc == 0)        // characters are always terminals
+                    yyvsp[0].tok->sym->sc = SC_TERM;
+                   RET1 
+                ;
+    break;}
+case 20:
+#line 176 "pre1.y"
+{ yyval.tok = NULL ;
+    break;}
+case 22:
+#line 181 "pre1.y"
+{ yyval.tok = NULL ;
+    break;}
+case 23:
+#line 182 "pre1.y"
+{ yyval.tok = Chain( yyvsp[-1].tok, yyvsp[0].tok ) ;
+    break;}
+case 24:
+#line 187 "pre1.y"
+{
+        yyvsp[-1].rule->sepLine = yyvsp[-2].tok->line;
+        yyvsp[-3].tok->sym->prod->firstRule = yyvsp[-1].rule;
+        yyvsp[-3].tok->sym->prod->semiLine = yyvsp[0].tok->line;
+        RET1;
+      ;
+    break;}
+case 25:
+#line 196 "pre1.y"
+{yyval.tok=yyvsp[-1].tok;
+    break;}
+case 26:
+#line 197 "pre1.y"
+{
+        TSymbol * sym = yyvsp[-3].tok->sym;
+
+        if (sym->type != NULL)
+        {
+          Error( "Redefining the type of typed non-terminal '%s' from %s to %s",
+                 C_STR(sym->name), C_STR(sym->type), C_STR(yyvsp[-4].tok->str) );
+        }
+        sym->type = yyvsp[-4].tok->str;
+        sym->bTyped = true;
+
+        yyval.tok = yyvsp[-3].tok;
+      ;
+    break;}
+case 27:
+#line 210 "pre1.y"
+{yyval.tok=yyvsp[-1].tok;
+    break;}
+case 30:
+#line 216 "pre1.y"
+{ 
+      ASSERT( yyvsp[-2].tok->sym );
+
+      if (yyvsp[-2].tok->sym->desc != NULL)
+        Warning( "Overiding the description of symbol '%s'", C_STR(yyvsp[-2].tok->sym->name) );
+
+      yyvsp[-2].tok->sym->desc = yyvsp[0].tok->str;
+    ;
+    break;}
+case 31:
+#line 228 "pre1.y"
+{
+        TSymbol * sym = GetSymbol( yyvsp[0].tok->str );
+
+        if (sym->sc == SC_TERM)
+        {
+          Error( "'%s' is already declared as a terminal symbol", C_STR(sym->name) );
+
+          // Perform some error recovery by creating a dummy symbol
+          //
+          sym = New_TSymbol( ErrorName );
+        }
+
+        // Add the symbol to the symbol list
+        //
+        if (sym->link.Flink == NULL)
+          INSERT_TAIL_LIST( &Symbols, &sym->link );
+
+        if (sym->prod == NULL)
+          sym->prod = New_TProd();
+
+        sym->sc = SC_NONTERM;
+        sym->bDefined = true;
+        yyvsp[0].tok->sym = sym;
+
+        CurNT = sym;
+
+        RET1;
+      ;
+    break;}
+case 33:
+#line 261 "pre1.y"
+{yyval.tok=yyvsp[-1].tok;
+    break;}
+case 35:
+#line 262 "pre1.y"
+{;
+    break;}
+case 37:
+#line 267 "pre1.y"
+{yyval.tok=yyvsp[-2].tok;
+    break;}
+case 39:
+#line 272 "pre1.y"
+{
+        TSymbol * nonterm = yyvsp[-3].tok->sym;
+        TProd * prod = nonterm->prod;
+        TSymbol * param;
+
+        if (prod->idtab == NULL)
+          prod->idtab = New_IdentTab();
+
+        if (IdentTab_Find( prod->idtab, yyvsp[0].tok->str, NULL ) != NULL)
+        {
+          Error( "Redefinition of parameter '%s'", C_STR(yyvsp[0].tok->str) );
+
+          // error recovery
+          param = New_TSymbol( ErrorName );
+        }
+        else
+          param = New_TSymbol( yyvsp[0].tok->str );
+
+        param->type = yyvsp[-1].tok->str;
+        param->sc = SC_PARAM;
+        IdentTab_Insert( prod->idtab, param, NULL );
+        INSERT_TAIL_LIST( &prod->params, &param->link );
+        param->index = ++prod->paramCount;
+      ;
+    break;}
+case 41:
+#line 302 "pre1.y"
+{
+        yyvsp[0].rule->sepLine = yyvsp[-1].tok->line;
+        yyvsp[-2].rule->nextRule = yyvsp[0].rule;
+        RET1;
+      ;
+    break;}
+case 42:
+#line 310 "pre1.y"
+{ 
+      CurTokIndex = 0; 
+      CurRule = New_TRule( NULL );
+    ;
+    break;}
+case 43:
+#line 314 "pre1.y"
+{ yyval.rule = CurRule ;
+    break;}
+case 46:
+#line 323 "pre1.y"
+{ CurRule->start = yyvsp[0].tok; ;
+    break;}
+case 47:
+#line 324 "pre1.y"
+{ Chain( CurRule->start, yyvsp[0].tok ); ;
+    break;}
+case 49:
+#line 330 "pre1.y"
+{ yyval.tok = Chain( yyvsp[-1].tok, yyvsp[0].tok ) ;
+    break;}
+case 50:
+#line 340 "pre1.y"
+{ yyvsp[0].tok->tokindex = ++CurTokIndex; RET1 ;
+    break;}
+case 52:
+#line 343 "pre1.y"
+{ 
+        if (yyvsp[-1].tok->code == TERM)
+        {
+          Error( "Invoking a terminal (%s) with arguments", C_STR(yyvsp[-1].tok->str) );
+          RET1;
+        }
+        else
+          yyval.tok = Chain( yyvsp[-1].tok, yyvsp[0].tok ) 
+      ;
+    break;}
+case 53:
+#line 356 "pre1.y"
+{ 
+        TSymbol * sym = yyvsp[0].tok->sym;
+
+        if (sym->sc == SC_TERM)
+          yyvsp[0].tok->code = TERM;
+        else
+          yyvsp[0].tok->code = NONTERM;
+        yyvsp[0].tok->sym = sym;
+        yyvsp[0].tok->tokindex = ++CurTokIndex;
+
+        RET1;
+      ;
+    break;}
+case 54:
+#line 373 "pre1.y"
+{ yyval.tok = Chain( yyvsp[-2].tok, Chain( yyvsp[-1].tok, yyvsp[0].tok ) ) ;
+    break;}
+case 56:
+#line 378 "pre1.y"
+{ yyval.tok = Chain( yyvsp[-2].tok, yyvsp[0].tok ) ;
+    break;}
+case 57:
+#line 383 "pre1.y"
+{
+        TSymbol * local;
+        int       refIndex;
+        int       kind      = CurNTFindLocal( yyvsp[0].tok->str, &local, &refIndex );
+
+        if (kind == 1)
+          yyvsp[0].tok->sym = local;
+        else
+        if (kind == 2)
+        {
+          yyvsp[0].tok->code = NUMBER;
+          yyvsp[0].tok->index = refIndex;
+        }
+  
+        yyval.tok = yyvsp[0].tok;
+      ;
+    break;}
+case 58:
+#line 401 "pre1.y"
+{
+        int number = atoi( C_STR(yyvsp[0].tok->str) );
+
+        Warning( "Usage of $N is deprecated" );
+
+        yyvsp[0].tok->index = number;
+
+        yyval.tok = Chain( yyvsp[0].tok, yyvsp[-1].tok );
+      ;
+    break;}
+case 59:
+#line 410 "pre1.y"
+{ Error( "Action arguments are not yet supported" ) ;
+    break;}
+case 60:
+#line 414 "pre1.y"
+{ yyval.tok = NULL ;
+    break;}
+case 62:
+#line 420 "pre1.y"
+{
+      if (!IdentTab_Find( TypesTab, yyvsp[0].tok->str, NULL ))
+      {
+        TSymbol * typeSym = New_TypeSymbol( yyvsp[0].tok->str );
+        IdentTab_Insert( TypesTab, typeSym, NULL );
+      }
+      RET1;
+    ;
+    break;}

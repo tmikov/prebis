@@ -1,0 +1,32 @@
+ 
+%token<val> TOK_VAL
+%token<int> TOK_INT
+
+%%
+
+%type<val> prog( $<int>a, $<val>b, $<int>c ) :
+    prog( $a, $b, $c )
+    {
+      @prog;
+      $$ = $prog;
+    }
+  | TOK_INT TOK_VAL TOK_INT prog($TOK_INT, $TOK_VAL, $c)
+    {
+      if (a) else;
+      $$ = $a + $<val>4 + $c;
+    }
+  | TOK_VAL TOK_INT prog($c, $1, $2)
+  | prog( $c, $b, $a )
+  | TOK_INT TOK_VAL
+    {
+      $$ = $TOK_INT + $TOK_VAL;
+    }
+  | /* empty */
+  ;
+
+%%
+
+void main ( void )
+{
+  {}
+};

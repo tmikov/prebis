@@ -1,0 +1,169 @@
+
+case 1:
+#line 78 "main/pre1.y"
+{;
+    break;}
+case 2:
+#line 82 "main/pre1.y"
+{;
+    break;}
+case 3:
+#line 83 "main/pre1.y"
+{;
+    break;}
+case 4:
+#line 88 "main/pre1.y"
+{;
+    break;}
+case 5:
+#line 89 "main/pre1.y"
+{;
+    break;}
+case 6:
+#line 90 "main/pre1.y"
+{;
+    break;}
+case 7:
+#line 94 "main/pre1.y"
+{;
+    break;}
+case 14:
+#line 101 "main/pre1.y"
+{ return "YYST_TOK"; ;
+    break;}
+case 15:
+#line 102 "main/pre1.y"
+{;
+    break;}
+case 16:
+#line 107 "main/pre1.y"
+{;
+    break;}
+case 17:
+#line 112 "main/pre1.y"
+{;
+    break;}
+case 18:
+#line 116 "main/pre1.y"
+{;
+    break;}
+case 19:
+#line 117 "main/pre1.y"
+{;
+    break;}
+case 20:
+#line 121 "main/pre1.y"
+{;
+    break;}
+case 22:
+#line 126 "main/pre1.y"
+{;
+    break;}
+case 23:
+#line 127 "main/pre1.y"
+{;
+    break;}
+case 24:
+#line 132 "main/pre1.y"
+{;
+    break;}
+case 25:
+#line 136 "main/pre1.y"
+{ return "YYST_TOK"; ;
+    break;}
+case 26:
+#line 137 "main/pre1.y"
+{;
+    break;}
+case 27:
+#line 138 "main/pre1.y"
+{ return "YYST_TOK"; ;
+    break;}
+case 30:
+#line 144 "main/pre1.y"
+{;
+    break;}
+case 31:
+#line 149 "main/pre1.y"
+{;
+    break;}
+case 33:
+#line 155 "main/pre1.y"
+{ return "YYST_TOK"; ;
+    break;}
+case 35:
+#line 156 "main/pre1.y"
+{;
+    break;}
+case 37:
+#line 161 "main/pre1.y"
+{ return "YYST_TOK"; ;
+    break;}
+case 39:
+#line 166 "main/pre1.y"
+{;
+    break;}
+case 41:
+#line 173 "main/pre1.y"
+{;
+    break;}
+case 42:
+#line 177 "main/pre1.y"
+{;
+    break;}
+case 43:
+#line 178 "main/pre1.y"
+{;
+    break;}
+case 46:
+#line 187 "main/pre1.y"
+{;
+    break;}
+case 47:
+#line 188 "main/pre1.y"
+{;
+    break;}
+case 49:
+#line 194 "main/pre1.y"
+{;
+    break;}
+case 50:
+#line 204 "main/pre1.y"
+{;
+    break;}
+case 52:
+#line 207 "main/pre1.y"
+{;
+    break;}
+case 53:
+#line 212 "main/pre1.y"
+{;
+    break;}
+case 54:
+#line 218 "main/pre1.y"
+{;
+    break;}
+case 56:
+#line 223 "main/pre1.y"
+{;
+    break;}
+case 57:
+#line 228 "main/pre1.y"
+{;
+    break;}
+case 58:
+#line 231 "main/pre1.y"
+{;
+    break;}
+case 59:
+#line 232 "main/pre1.y"
+{;
+    break;}
+case 60:
+#line 236 "main/pre1.y"
+{;
+    break;}
+case 62:
+#line 242 "main/pre1.y"
+{;
+    break;}

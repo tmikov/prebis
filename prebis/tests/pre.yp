@@ -1,0 +1,579 @@
+%{
+#include "precomp.h"
+#include "prebis.h"
+
+#define YYINITDEPTH 50
+
+#define YYDEBUG 1
+
+#if YYDEBUG
+#  define YYERROR_VERBOSE 1
+#endif
+#define YYSTDERR          stdout
+
+// In order to prevent usage of last_line & last_column, we declare this to be
+// empty
+#define YYLLOC_DEFAULT(Current, Rhs, N) 
+
+void yyerror ( char * err );
+int yylex ( void );
+void yy_mark ( unsigned typ, const YYSTYPE * pval );
+
+static TToken * Chain ( TToken * a, TToken * b );
+
+#include "pre.tab.inc"
+
+#define RET1
+
+%}
+
+%union
+{
+  TToken * tok;
+  TRule  * rule;
+}
+
+// We have two symbols for action because we need the lookahead to have been processed when we are
+// lexing the body of the action. So, we return ACTION1 as soon as we reach the '{'.
+//
+%token      ACTION1 / "{ action }"
+%token<tok> ACTION2 / "{ action }"
+
+%token<tok> 
+  C_SECTION   / "%{ code section }"
+  LEFT        / "%left"
+  NONASSOC    / "%nonassoc"
+  RIGHT       / "%right"
+  START       / "%start"
+  TOKEN       / "%token"
+  TYPE        / "%type"
+  UNION       / "%union"
+  PREC        / "%prec"
+  EXPECT      / "%expect"
+  OTHER       / "%<<reserved>>"
+  SECTION     / "first '%%'"
+  END_SECTION / "terminating '%%'"
+  IDENT       / "identifier" 
+  C_STRING    / "\"string constant\""
+  CHAR        / "'character constant'"
+  NUMBER      / "number"
+  SEMTYPE     / "<semantic type>"
+
+
+// artificial tokens
+%token<tok> TERM
+%token<tok> NONTERM
+
+%token<tok> 
+  ':'  / ":"
+  ';'  / ";"
+  '|'  / "|"
+  '('  / "("
+  ')'  / ")"
+
+%%
+
+%type<tok> grammar:
+    c_section_opt decl_list SECTION prod_list END_SECTION
+    {
+      $$ = Chain( $c_section_opt, Chain( $decl_list, Chain( $SECTION, Chain( $prod_list, $END_SECTION ) ) ) );
+
+      TRACE1( "Strings_count = %u\n", Strings_Count );
+      Strings_Unpin();
+      if (GcCollectStart( false ))
+      {
+        YY_MARK_STACK();
+        GC_MARK( $$ );
+        Prebis_MarkRoots();
+        GcCollectEnd();
+      }
+
+      Gen( $$ );
+      printf( "\n" );
+    }
+  ;
+
+%type<tok> decl_list:
+    /* empty */     { $$ = NULL }
+  | decl_list decl  { $$ = Chain( $decl_list, $decl ) }
+  ;
+
+%type<tok> decl:
+    any_decl opt_sem_type decl_ident_list( $opt_sem_type )
+      {
+        TToken * tok;
+
+        // Declare terminals
+        //
+        for ( tok = $decl_ident_list; tok != NULL; tok = tok->pNext )
+        {
+          TSymbol * sym = tok->sym;
+
+          // if it is not declared with "%type", it is a terminal symbol
+          if (sym->sc == 0 && $any_decl->code != TYPE)
+            sym->sc = SC_TERM;
+        }
+
+        $$ = Chain( $any_decl, Chain( $opt_sem_type, $decl_ident_list ) );
+      }
+  | UNION action  { $$ = Chain( $UNION, $action ) }
+  | EXPECT NUMBER { $$ = Chain( $EXPECT, $NUMBER ) }
+  ;
+
+%type<tok> action:
+    ACTION1 ACTION2 { $$ = $ACTION2 }
+  ;
+
+%type<tok> any_decl: LEFT | NONASSOC | RIGHT | TOKEN | TYPE;
+
+%type<tok> decl_ident_list( $<tok>opt_sem_type ):
+    decl_ident_or_char( $opt_sem_type )
+  | decl_ident_list( $opt_sem_type ) decl_ident_or_char( $opt_sem_type )  
+      { $$ = Chain( $decl_ident_list, $decl_ident_or_char ) }
+  ;
+
+%type<tok> decl_ident_or_char( $<tok>opt_sem_type ):
+    ident_or_char description_opt( $ident_or_char )
+    {
+      TSymbol * sym = $ident_or_char->sym;
+
+      // Set the type
+      if ($opt_sem_type != NULL)
+      {
+        if (sym->type != NULL)
+        {
+          if (sym->type != $opt_sem_type->str)
+          {
+            Error( "Redefining the type of terminal '%s' from %s to %s", 
+                    C_STR(sym->name), C_STR(sym->type), C_STR($opt_sem_type->str) );
+          }
+        }
+        sym->type = $opt_sem_type->str;
+      }
+      
+      RET1;
+    }
+  ;
+
+%type<tok> ident_or_char:
+    id_or_char
+    {
+      // Add the symbol to the symbol list
+      //
+      if ($id_or_char->sym->link.Flink == NULL)
+        INSERT_TAIL_LIST( &Symbols, &$id_or_char->sym->link );
+      RET1;
+    }
+  ;
+
+%type<tok> id_or_char:
+    IDENT       { $IDENT->sym = GetSymbol( $IDENT->str ); RET1 }
+  | CHAR        { 
+                  $CHAR->sym = GetSymbol( $CHAR->str ); 
+                  if ($CHAR->sym->sc == 0)        // characters are always terminals
+                    $CHAR->sym->sc = SC_TERM;
+                   RET1 
+                }
+  ;
+
+%type<tok> c_section_opt:
+    /* empty */   { $$ = NULL }
+  | C_SECTION
+  ;
+
+%type<tok> prod_list:
+    /* empty */     { $$ = NULL }
+  | prod_list prod  { $$ = Chain( $prod_list, $prod ) }
+  ;
+
+%type<tok> prod:
+    prod_head ':' alt_list ';'
+      {
+        $alt_list->sepLine = $2->line;
+        $prod_head->sym->prod->firstRule = $alt_list;
+        $prod_head->sym->prod->semiLine = $4->line;
+        RET1;
+      }
+  ;
+
+%type<tok> prod_head:
+    TYPE sem_type prod_ident params_decl_opt( $prod_ident ) description_opt( $prod_ident )
+      {
+        TSymbol * sym = $prod_ident->sym;
+
+        if (sym->type != NULL)
+        {
+          Error( "Redefining the type of typed non-terminal '%s' from %s to %s",
+                 C_STR(sym->name), C_STR(sym->type), C_STR($sem_type->str) );
+        }
+        sym->type = $sem_type->str;
+        sym->bTyped = true;
+
+        $$ = $prod_ident;
+      }
+  | prod_ident params_decl_opt( $prod_ident ) description_opt( $prod_ident )
+  ;
+
+description_opt( $<tok>ident ):
+    /* empty */       
+  | '/' C_STRING      
+    { 
+      ASSERT( $ident->sym );
+
+      if ($ident->sym->desc != NULL)
+        Warning( "Overiding the description of symbol '%s'", C_STR($ident->sym->name) );
+
+      $ident->sym->desc = $C_STRING->str;
+    }
+  ;
+
+%type<tok> prod_ident:
+    IDENT
+      {
+        TSymbol * sym = GetSymbol( $IDENT->str );
+
+        if (sym->sc == SC_TERM)
+        {
+          Error( "'%s' is already declared as a terminal symbol", C_STR(sym->name) );
+
+          // Perform some error recovery by creating a dummy symbol
+          //
+          sym = New_TSymbol( ErrorName );
+        }
+
+        // Add the symbol to the symbol list
+        //
+        if (sym->link.Flink == NULL)
+          INSERT_TAIL_LIST( &Symbols, &sym->link );
+
+        if (sym->prod == NULL)
+          sym->prod = New_TProd();
+
+        sym->sc = SC_NONTERM;
+        sym->bDefined = true;
+        $IDENT->sym = sym;
+
+        CurNT = sym;
+
+        RET1;
+      }
+  ;
+ 
+
+params_decl_opt( $<tok>prod ):
+    /* empty */                                   
+  | '(' param_decl_list( $prod ) ')'   
+  | '(' ')'                            {}
+  ;
+
+param_decl_list( $<tok>prod ):
+    param_decl( $prod )
+  | param_decl_list( $prod ) ',' param_decl( $prod )
+  ;
+
+param_decl( $<tok>prod ):
+    '$' sem_type IDENT
+      {
+        TSymbol * nonterm = $prod->sym;
+        TProd * prod = nonterm->prod;
+        TSymbol * param;
+
+        if (prod->idtab == NULL)
+          prod->idtab = New_IdentTab();
+
+        if (IdentTab_Find( prod->idtab, $IDENT->str, NULL ) != NULL)
+        {
+          Error( "Redefinition of parameter '%s'", C_STR($IDENT->str) );
+
+          // error recovery
+          param = New_TSymbol( ErrorName );
+        }
+        else
+          param = New_TSymbol( $IDENT->str );
+
+        param->type = $sem_type->str;
+        param->sc = SC_PARAM;
+        IdentTab_Insert( prod->idtab, param, NULL );
+        INSERT_TAIL_LIST( &prod->params, &param->link );
+        param->index = ++prod->paramCount;
+      }      
+  ;
+
+// Here we use right recursion, so we can easily build the list
+%type<rule> alt_list:
+    rule
+  | rule '|' alt_list
+      {
+        $alt_list->sepLine = $2->line;
+        $rule->nextRule = $alt_list;
+        RET1;
+      }
+  ;
+
+%type<rule> rule:
+    { 
+      CurTokIndex = 0; 
+      CurRule = New_TRule( NULL );
+    } 
+    sym_list_opt { $$ = CurRule }
+  ;
+
+sym_list_opt:
+    /* empty */                   
+  | sym_list
+  ;
+
+sym_list:
+    symbol_invoke                 { CurRule->start = $symbol_invoke; }
+  | sym_list symbol_invoke        { Chain( CurRule->start, $symbol_invoke ); }
+  ;
+
+%type<tok> symbol_invoke: 
+    symbol
+/*  | symbol '=' sem_ident*/
+  | PREC ident_or_char            { $$ = Chain( $PREC, $ident_or_char ) }
+  ;
+
+/*    
+sem_ident:
+    '$' opt_sem_type IDENT
+  ;
+*/
+
+%type<tok> symbol:
+    action                        { $action->tokindex = ++CurTokIndex; RET1 }
+  | sym_ident
+  | sym_ident call                
+      { 
+        if ($sym_ident->code == TERM)
+        {
+          Error( "Invoking a terminal (%s) with arguments", C_STR($sym_ident->str) );
+          RET1;
+        }
+        else
+          $$ = Chain( $sym_ident, $call ) 
+      }
+  ;
+
+%type<tok> sym_ident:
+    ident_or_char
+      { 
+        TSymbol * sym = $ident_or_char->sym;
+
+        if (sym->sc == SC_TERM)
+          $ident_or_char->code = TERM;
+        else
+          $ident_or_char->code = NONTERM;
+        $ident_or_char->sym = sym;
+        $ident_or_char->tokindex = ++CurTokIndex;
+
+        RET1;
+      }
+  ;
+    
+
+
+%type<tok> call:
+    '(' arg_list ')'              { $$ = Chain( $1, Chain( $arg_list, $3 ) ) }
+  ;
+
+%type<tok> arg_list:
+    arg
+  | arg_list ',' arg              { $$ = Chain( $arg_list, $arg ) }
+  ;
+
+%type<tok> arg: 
+    '$' IDENT
+      {
+        TSymbol * local;
+        int       refIndex;
+        int       kind      = CurNTFindLocal( $IDENT->str, &local, &refIndex );
+
+        if (kind == 1)
+          $IDENT->sym = local;
+        else
+        if (kind == 2)
+        {
+          $IDENT->code = NUMBER;
+          $IDENT->index = refIndex;
+        }
+  
+        $$ = $IDENT;
+      }
+
+  | '$' opt_sem_type NUMBER
+      {
+        int number = atoi( C_STR($NUMBER->str) );
+
+        Warning( "Usage of $N is deprecated" );
+
+        $NUMBER->index = number;
+
+        $$ = Chain( $NUMBER, $opt_sem_type );
+      }
+  | action  { Error( "Action arguments are not yet supported" ) }
+  ;
+
+%type<tok> opt_sem_type:
+    /* empty */  { $$ = NULL }
+  | sem_type
+  ;
+
+%type<tok> sem_type:
+    SEMTYPE      
+    {
+      if (!IdentTab_Find( TypesTab, $SEMTYPE->str, NULL ))
+      {
+        TSymbol * typeSym = New_TypeSymbol( $SEMTYPE->str );
+        IdentTab_Insert( TypesTab, typeSym, NULL );
+      }
+      RET1;
+    }
+  ;
+
+
+%%
+
+//--------------------------------------------------------------------------
+// Name         yy_mark 
+//
+// 
+//--------------------------------------------------------------------------
+void yy_mark ( unsigned typ, const YYSTYPE * pval )
+{
+  switch (typ)
+  {
+  case YYST_TOK:
+    GC_MARK( pval->tok );
+    break;
+
+  case YYST_RULE:
+    GC_MARK( pval->rule );
+    break;
+
+  default:
+    ASSERT( 0 );
+  }
+};
+
+//--------------------------------------------------------------------------
+// Name         Chain 
+//
+// 
+//--------------------------------------------------------------------------
+static TToken * Chain ( TToken * a, TToken * b )
+{
+  if (a == NULL)
+    return b;
+  if (b == NULL)
+    return a;
+
+  a->pLast->pNext = b;
+  a->pLast = b->pLast;
+
+  return a;
+};
+
+//--------------------------------------------------------------------------
+// Name         PrintMessage 
+//
+// 
+//--------------------------------------------------------------------------
+static void PrintMessage ( int line, const char * msg, const char * fmt, va_list ap )
+{
+  fprintf( stderr, "%s(%d) : %s : ", szFileName, line, msg );
+  vfprintf( stderr, fmt, ap );
+  fprintf( stderr, "\n" );
+};
+
+
+//--------------------------------------------------------------------------
+// Name         FatalError 
+//
+// 
+//--------------------------------------------------------------------------
+void FatalError ( const char * err, ... )
+{
+  va_list ap;
+  va_start( ap, err );
+
+  ++ErrorCount;
+  PrintMessage( yylineno, "fatal error", err, ap );
+
+  va_end( ap );
+
+  exit( EXIT_FAILURE );
+};
+
+//--------------------------------------------------------------------------
+// Name         Error 
+//
+// 
+//--------------------------------------------------------------------------
+void Error ( const char * err, ... )
+{
+  va_list ap;
+  va_start( ap, err );
+
+  ++ErrorCount;
+  PrintMessage( yylineno, "error", err, ap );
+
+  va_end( ap );
+};
+
+//--------------------------------------------------------------------------
+// Name         Warning 
+//
+// 
+//--------------------------------------------------------------------------
+void Warning ( const char * err, ... )
+{
+  va_list ap;
+  va_start( ap, err );
+
+  PrintMessage( yylineno, "warning", err, ap );
+
+  va_end( ap );
+};
+
+//--------------------------------------------------------------------------
+// Name         ErrorLine 
+//
+// 
+//--------------------------------------------------------------------------
+void ErrorLine ( int line, const char * err, ... )
+{
+  va_list ap;
+  va_start( ap, err );
+
+  ++ErrorCount;
+  PrintMessage( line, "error", err, ap );
+
+  va_end( ap );
+};
+
+//--------------------------------------------------------------------------
+// Name         WarningLine
+//
+// 
+//--------------------------------------------------------------------------
+void WarningLine ( int line, const char * err, ... )
+{
+  va_list ap;
+  va_start( ap, err );
+
+  PrintMessage( line, "warning", err, ap );
+
+  va_end( ap );
+};
+
+//--------------------------------------------------------------------------
+// Name         yyerror 
+//
+// 
+//--------------------------------------------------------------------------
+void yyerror ( char * err )
+{
+  Error( "%s at '%s'", err, yytext );
+};
+
